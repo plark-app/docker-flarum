@@ -1,0 +1,74 @@
+version: "3"
+
+services:
+  #  nginx:
+  #    image: nginx:latest
+  #    container_name: nginx
+  #    ports:
+  #      - "80:80"
+  #    volumes:
+  #      - /mnt/docker/nginx/conf.d/site.template:/etc/nginx/conf.d/site.template
+  #    environment:
+  #      - NGINX_HOST=community.plark.io
+  #      - NGINX_PORT=80
+  #    links:
+  #      - flarum
+  #    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/site.template > /etc/nginx/conf.d/site.conf && nginx -g 'daemon off;'"
+
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /etc/nginx/certs:/etc/nginx/certs:ro
+      - /etc/nginx/vhost.d:/etc/nginx/vhost.d
+      - /usr/share/nginx/html:/usr/share/nginx/html
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+
+  letsencrypt-nginx:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: letsencrypt-nginx
+    depends_on:
+      - nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/nginx/certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /etc/nginx/vhost.d:/etc/nginx/vhost.d
+      - /usr/share/nginx/html:/usr/share/nginx/html
+
+
+  flarum:
+    build: https://github.com/plark-app/docker-flarum.git#master
+    container_name: flarum
+    environment:
+      VIRTUAL_HOST: community.plark.io
+      VIRTUAL_PORT: 8888
+      LETSENCRYPT_HOST: community.plark.io
+    env_file:
+      - /mnt/docker/flarum/flarum.env
+    volumes:
+      - /mnt/docker/flarum/assets:/flarum/app/public/assets
+      - /mnt/docker/flarum/extensions:/flarum/app/extensions
+      - /mnt/docker/flarum/nginx:/etc/nginx/conf.d
+    depends_on:
+      - nginx-proxy
+      - letsencrypt-nginx
+      - mariadb
+
+
+  mariadb:
+    image: mariadb:10.2
+    container_name: mariadb
+    environment:
+      - MYSQL_DATABASE=
+      - MYSQL_USER=
+      - MYSQL_PASSWORD=
+      - MYSQL_ROOT_PASSWORD=
+    volumes:
+      - /mnt/docker/mysql/db:/var/lib/mysql
