@@ -1,0 +1,6 @@
+flagrow/flarum-ext-analytics
+flagrow/sitemap
+flagrow/users-list
+fof/user-directory
+sijad/flarum-ext-links
+v17development/flarum-seo
