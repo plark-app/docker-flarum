@@ -10,13 +10,13 @@ Simple forum software for building great communities. http://flarum.org/
 
 - Lightweight & secure image
 - Based on Alpine Linux with **nginx** and **PHP 7.2**
-- Latest [Flarum Core](https://github.com/flarum/core) (v0.1.0-beta.8.1)
+- Latest [Flarum Core](https://github.com/flarum/core) (v0.1.0-beta.9)
 - MySQL/Mariadb driver
 - OPCache extension configured
 
 ### Build-time variables
 
-- **VERSION** = Version of [flarum/flarum](https://github.com/flarum/flarum) skeleton (default: *v0.1.0-beta.8.1*)
+- **VERSION** = Version of [flarum/flarum](https://github.com/flarum/flarum) skeleton (default: *v0.1.0-beta.9*)
 
 ### Ports
 
